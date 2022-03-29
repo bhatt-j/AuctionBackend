@@ -1,8 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const res = require('express/lib/response');
+const path = require('path');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-const User = require('./models/user');
 
 const app = express();
 
@@ -23,6 +23,12 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 })
 
 app.use(express.json());
+app.use(bodyParser.json());
+
+app.use('/uploads',express.static(path.join(__dirname)));
+
+const fileRouter = require('./routes/fileUpload');
+app.use('/fileApi',fileRouter);
 
 const adminRouter = require('./routes/adminRoute');
 app.use('/admin',adminRouter);
