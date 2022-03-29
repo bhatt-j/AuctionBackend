@@ -13,6 +13,24 @@ router.route('/add_chat').post((req, res) => {
     .then((result) => {
         res.json('Chat added')
     })
+});
+
+router.route('/:id').get((req,res)=> {
+    Chat.findById(req.params.id)
+   .then(chat=>res.json(chat))
+   .catch(err=>res.status(400).json('Error' + err));
+});
+
+router.route('/updateChat/:id').put(function(req,res){
+    Chat.findByIdAndUpdate(req.params.id,req.body)
+    .then(chat=>res.json(chat))
+    .catch(err=>res.status(400).json('Error' + err));
 })
+
+router.route('/deleteChat/:id').delete((req,res)=> {
+    Chat.findByIdAndRemove(req.params.id)
+   .then(chat=>res.json(chat))
+   .catch(err=>res.status(400).json('Error' + err));
+});
 
 module.exports = router;

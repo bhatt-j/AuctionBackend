@@ -15,4 +15,22 @@ router.route('/add_admin').post((req, res) => {
     })
 })
 
+router.route('/:id').get((req,res)=> {
+    Admin.findById(req.params.id)
+   .then(admin=>res.json(admin))
+   .catch(err=>res.status(400).json('Error' + err));
+});
+
+router.route('/updateAdmin/:id').put(function(req,res){
+    Admin.findByIdAndUpdate(req.params.id,req.body)
+    .then(admin=>res.json(admin))
+    .catch(err=>res.status(400).json('Error' + err));
+})
+
+router.route('/deleteAdmin/:id').delete((req,res)=> {
+    Admin.findByIdAndRemove(req.params.id)
+   .then(admin=>res.json(admin))
+   .catch(err=>res.status(400).json('Error' + err));
+});
+
 module.exports = router;
