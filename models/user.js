@@ -19,7 +19,7 @@ const userSchema = new Schema({
         required: true
     },
     mobileNumber: {
-        type: Number,
+        type: String,
         required: true
     },
     aadharNumber: {
@@ -29,6 +29,10 @@ const userSchema = new Schema({
     gender: {
         type: String,
         required: true
+    },
+    password:{
+        type:String,
+        required:true
     }
 }, {timestamps: true});
 
