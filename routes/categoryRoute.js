@@ -14,6 +14,24 @@ router.route('/add_category').post((req, res) => {
     .then((result) => {
         res.json('Category added')
     })
+});
+
+router.route('/:id').get((req,res)=> {
+    Category.findById(req.params.id)
+   .then(category=>res.json(category))
+   .catch(err=>res.status(400).json('Error' + err));
+});
+
+router.route('/updateCategory/:id').put(function(req,res){
+    Category.findByIdAndUpdate(req.params.id,req.body)
+    .then(category=>res.json(category))
+    .catch(err=>res.status(400).json('Error' + err));
 })
+
+router.route('/deleteCategory/:id').delete((req,res)=> {
+    Category.findByIdAndRemove(req.params.id)
+   .then(category=>res.json(category))
+   .catch(err=>res.status(400).json('Error' + err));
+});
 
 module.exports = router;
