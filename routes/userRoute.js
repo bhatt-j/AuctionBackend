@@ -57,6 +57,16 @@ router.route('/register').post(async (req, res) => {
       }
 });
 
+router.route('/login').post(async (req, res) => {
+  try {
+    let {email, password} = req.body
+    let user = await User.findOne({email: email, password: password})
+    res.json(user);
+  } catch (err) {
+    res.json({msg: err})
+  }  
+});
+
 router.route('/:id').get((req,res)=> {
     User.findById(req.params.id)
    .then(user=>res.json(user))
