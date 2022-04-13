@@ -1,6 +1,11 @@
 const router = require('express').Router();
 let User = require('../models/user');
 
+// email verification
+const mail = require('nodemailer')
+const {v4 : uuidv4} = require('uuid')
+
+
 //bcrypt
 const bcrypt=require('bcryptjs')
 
@@ -9,6 +14,47 @@ const responses=require("../utils/responses")
 
 //validations
 const validation=require('../validations/register.validation')
+
+let transporter = mail.createTransport({
+  service: "gmail",
+  auth: {
+      user: process.env.AUTH_EMAIL,
+      pass: process.env.AUTH_PASS
+  }
+})
+
+transporter.verify((err, success) => {
+  if(err)
+  {
+      console.log(err);
+  }
+  else{
+      console.log('ready to send emails!');
+      console.log(success);
+  }
+})
+
+const sendVerificationMail = ({_id, email, uniqueToken}, res) => {
+  
+  const currentUrl = "http://localhost:4000/";
+  
+
+  const mailOptions = {
+      from: process.env.AUTH_EMAIL,
+      to: email,
+      subject: "Verify your Email",
+      html: `<p> Click <a href=${currentUrl + "user/verify" + "/" + uniqueToken}>here</a> to verify your mail </p>`
+  }
+
+  transporter.sendMail(mailOptions)
+  .then(() => {
+      res.json("Mail Sent!")
+  })
+  .catch((err) => {
+      res.json(err);
+  });
+}
+
 
 router.route('/all').get((req, res) => {
     User.find()
@@ -35,6 +81,9 @@ router.route('/register').post(async (req, res) => {
               mobileNumber: req.body.mobile
             }, {
               email: req.body.email
+            },
+            {
+              aadharNumber:req.body.aadharNumber
             }
           ]
         })
@@ -57,14 +106,45 @@ router.route('/register').post(async (req, res) => {
       }
 });
 
-router.route('/login').post(async (req, res) => {
-  try {
-    let {email, password} = req.body
-    let user = await User.findOne({email: email, password: password})
-    res.json(user);
-  } catch (err) {
-    res.json({msg: err})
-  }  
+router.route('/verify/:token').get((req, res) => {
+  User.findOne({uniqueToken: req.params.token}, (err, docs) => {
+      if(err)
+      {
+          res.json("Sorry! Invalid Registration.")
+      }
+      else{
+          User.updateOne({ uniqueToken: req.params.token }, {isVerified: true}, (err, docs) => {
+              if(err)
+              {
+                  res.json(err);
+              }
+              else{
+                  res.json("Your account has been verified!");
+              }
+          })
+      }
+  })
+})
+
+router.route('/login').post((req,res)=> {
+  User.findOne({email:req.body.email})
+  .then(user=>{
+    if(!user)
+      res.status(404).json({error:"No user found"})
+    else{
+      bcrypt.compare(req.body.password,user.password,(error,result)=>{
+        if(error)
+          res.status(500).json(error)
+        else if(result)
+          res.status(200).json(user)
+        else
+          res.status(403).json({error:"Password is incorrect"})
+      })
+    }
+  })
+ .catch(error=>{
+   res.status(500).json(error)
+ })
 });
 
 router.route('/:id').get((req,res)=> {
