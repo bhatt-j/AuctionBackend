@@ -58,6 +58,7 @@ router.route('/register').post(async (req, res) => {
       }
 });
 
+<<<<<<< HEAD
 router.route('/login').get((req,res)=> {
   User.findOne({email:req.body.email})
   .then(user=>{
@@ -77,6 +78,16 @@ router.route('/login').get((req,res)=> {
  .catch(error=>{
    res.status(500).json(error)
  })
+=======
+router.route('/login').post(async (req, res) => {
+  try {
+    let {email, password} = req.body
+    let user = await User.findOne({email: email, password: password})
+    res.json(user);
+  } catch (err) {
+    res.json({msg: err})
+  }  
+>>>>>>> 29ad1743155e0bea4c6a8a0163ac663ff4cecb94
 });
 
 router.route('/:id').get((req,res)=> {

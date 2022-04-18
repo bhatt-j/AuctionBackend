@@ -12,6 +12,7 @@ module.exports = (user) => {
       password: joi.string().required(),
       aadharNumber: joi.number().required(),
       gender:joi.string().required(),
+      dob:joi.date().required(),
     //   email: joi.string().custom((val, helper) => {
     //     if (email_regex.test(val)) {
     //       return true;
