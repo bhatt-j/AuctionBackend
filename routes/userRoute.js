@@ -58,36 +58,14 @@ router.route('/register').post(async (req, res) => {
       }
 });
 
-<<<<<<< HEAD
-router.route('/login').get((req,res)=> {
-  User.findOne({email:req.body.email})
-  .then(user=>{
-    if(!user)
-      res.status(404).json({error:"No user found"})
-    else{
-      bcrypt.compare(req.body.password,user.password,(error,result)=>{
-        if(error)
-          res.status(500).json(error)
-        else if(result)
-          res.status(200).json(user)
-        else
-          res.status(403).json({error:"Password is incorrect"})
-      })
-    }
-  })
- .catch(error=>{
-   res.status(500).json(error)
- })
-=======
 router.route('/login').post(async (req, res) => {
   try {
     let {email, password} = req.body
-    let user = await User.findOne({email: email, password: password})
+    let user= await User.findOne({email: email, password: password})
     res.json(user);
   } catch (err) {
     res.json({msg: err})
   }  
->>>>>>> 29ad1743155e0bea4c6a8a0163ac663ff4cecb94
 });
 
 router.route('/:id').get((req,res)=> {
