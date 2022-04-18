@@ -20,7 +20,7 @@ module.exports = (user) => {
     //   }),
       email:joi.string().email().required(),
       mobileNumber:joi.string().required(),
-      avtar:joi.string().required()
+      dob:joi.string().required(),
     })
     .options({ abortEarly: true });
   return createUserSchema.validate(user);
