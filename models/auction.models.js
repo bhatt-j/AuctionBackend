@@ -1,18 +1,30 @@
+const { string } = require('joi');
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema 
 
 const auctionSchema = new Schema({
-    productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        required: true
-    }, 
     userId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref:"users",
+        required: true
+    },
+    productName: {
+        type : String,
+        required:true
+    },
+    productDescription: {
+        type : String,
+        required:true
+    },
+    productImage:{
+        images: [{
+            images:String,
+        }],
         required: true
     },
     productPrice:{
-        type: Number,
-        required: true
+        type:Number,
+        required:true
     },
     startDate: {
         type: Date,
@@ -21,6 +33,14 @@ const auctionSchema = new Schema({
     endDate: {
         type: Date,
         required: true
+    },
+    startTime:{
+        type:String,
+        default:"9:00 am"
+    },
+    endTime:{
+        type:String,
+        default:"10:00 pm"
     },
     auctionStatus: {
         type : String,

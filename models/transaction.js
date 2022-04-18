@@ -4,10 +4,12 @@ const Schema = mongoose.Schema
 const transactionSchema = new Schema({
     bidderId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref:"users",
         required: true
     }, 
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref:"users",
         required: true
     },
     date: {
@@ -16,6 +18,7 @@ const transactionSchema = new Schema({
     },
     bidId: {
         type: mongoose.Schema.Types.ObjectId,
+        ref:"auctions",
         required: true
     },
     amount: {
