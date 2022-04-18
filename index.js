@@ -40,20 +40,11 @@ app.use('/wallet',walletRouter);
 const transactionRouter = require('./routes/transactionRoute');
 app.use('/transaction',transactionRouter);
 
-const categoryRouter = require('./routes/categoryRoute');
-app.use('/category',categoryRouter);
-
-const chatRouter = require('./routes/chatRoute');
-app.use('/chat',chatRouter);
-
 const auctionRouter = require('./routes/auctionRoute');
 app.use('/auction',auctionRouter);
 
 const userRouter = require('./routes/userRoute');
 app.use('/user', userRouter);
-
-const productRouter = require('./routes/productRoute');
-app.use('/product', productRouter);
 
 app.get('/', (req, res) => {
     res.render('index');

@@ -17,9 +17,7 @@ const auctionSchema = new Schema({
         required:true
     },
     productImage:{
-        images: [{
-            images:String,
-        }],
+        type:String,
         required: true
     },
     productPrice:{
@@ -42,13 +40,13 @@ const auctionSchema = new Schema({
         type:String,
         default:"10:00 pm"
     },
-    auctionStatus: {
+    status: {
         type : String,
         required:true
     },
-    highestBid: {
+    Bid: {
         type: Number,
-        required: true
+        required: true,
     },
 }, {timestamps: true});
 
