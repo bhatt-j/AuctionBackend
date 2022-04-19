@@ -58,14 +58,27 @@ router.route('/register').post(async (req, res) => {
       }
 });
 
-router.route('/login').post(async (req, res) => {
-  try {
-    let {email, password} = req.body
-    let user= await User.findOne({email: email, password: password})
-    res.json(user);
-  } catch (err) {
-    res.json({msg: err})
-  }  
+router.route('/login').post(async (req,res)=> {
+  console.log('hello');
+  User.findOne({email:req.body.email})
+  .then(user=>{
+    console.log(user);
+    if(!user)
+      return res.status(404).json({error:"No user found"})
+    else{
+      bcrypt.compare(req.body.password,user.password,(error,result)=>{
+        if(error)
+          return res.status(500).json(error)
+        else if(result)
+          return res.status(200).json(user)
+        else
+          return res.status(403).json({error:"Password is incorrect"})
+      })
+    }
+  })
+ .catch(error=>{
+   res.status(500).json(error)
+ })
 });
 
 router.route('/:id').get((req,res)=> {

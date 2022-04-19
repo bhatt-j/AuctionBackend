@@ -2,6 +2,7 @@ const router = require('express').Router();
 let Auction = require('../models/auction.models');
 const {upload} = require('../filehelper/filehelper')
 
+
 router.route('/:id').get((req,res)=> {
     Auction.findById(req.params.id)
     .then(auction=>res.json(auction))
@@ -44,8 +45,13 @@ router.route('/all').get((req, res) => {
     })
 })
 
-router.route('/add-product').post(upload.single('productImage'),(req, res) => {
-    const auction  = new Auction({"productImage":req.file.path,"userId":req.body.userId,"productName":req.body.productName,"productDescription":req.body.productDescription,"productPrice":req.body.productPrice,"startDate":req.body.startDate,"endDate":req.body.endDate,"status":"upcoming","Bid":req.body.productPrice})
+router.route('/add-product').post(upload.array('file'),(req, res) => {
+    var productImage=[]
+    for(var i=0;i<req.files.length;i++){
+        productImage.push(req.files[i].path);
+    }
+    console.log(productImage);
+    const auction  = new Auction({"productImage":productImage,"userId":req.body.userId,"productName":req.body.productName,"productDescription":req.body.productDescription,"productPrice":req.body.productPrice,"startDate":req.body.startDate,"endDate":req.body.endDate,"status":"upcoming","Bid":req.body.productPrice})
     auction.save()
     .then((result) => {
         res.json("Product Added")
