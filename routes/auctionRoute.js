@@ -2,6 +2,16 @@ const router = require('express').Router();
 let Auction = require('../models/auction.models');
 const {upload} = require('../filehelper/filehelper')
 
+router.route('/all').get((req, res) => {
+    Auction.find()
+    .then((result) => {
+        res.json(result);
+    })
+    .catch((err) => {
+        res.json(err)
+    })
+})
+
 
 router.route('/:id').get((req,res)=> {
     Auction.findById(req.params.id)
@@ -35,15 +45,6 @@ router.route('/deleteAuction/:id').delete((req,res)=> {
    .catch(err=>res.status(400).json('Error' + err));
 });
 
-router.route('/all').get((req, res) => {
-    Product.find()
-    .then((result) => {
-        res.json(result);
-    })
-    .catch((err) => {
-        res.json(err)
-    })
-})
 
 router.route('/add-product').post(upload.array('file'),(req, res) => {
     var productImage=[]
