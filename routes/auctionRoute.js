@@ -77,5 +77,16 @@ router.route('/deleteProduct/:id').delete((req,res)=> {
    .catch(err=>res.status(400).json('Error' + err));
 });
 
+router.route('/bidProduct/:id').put(function (req,res) {
+    const bidderName=req.body.name;
+    const amt=req.body.amount;
+    const bidInfo = {
+        Bidder: bidderName,
+        Amount: amt
+    };
+    Auction.findByIdAndUpdate(req.params.id,{"highestBid":amt,"Bid":{$push:{bidInfo}}})
+    .then(auction=>res.json(auction))
+   .catch(err=>res.status(400).json('Error' + err));
+})
 
 module.exports = router;

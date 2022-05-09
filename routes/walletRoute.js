@@ -3,9 +3,9 @@ const wallet = require('../models/wallet');
 let Wallet = require('../models/wallet');
 
 router.route('/get_wallet').post((req,res)=> {
-    Wallet.find({'username': req.body.username}, (err, docs) => {
-        res.json(docs);
-    })
+    Wallet.findById(req.params.id)
+    .then(wallet=>res.json(wallet))
+    .catch(err=>res.status(400).json('Error' + err));
 });
 
 router.route('/add_amount').post((req, res) => {
