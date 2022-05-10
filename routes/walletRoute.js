@@ -23,7 +23,7 @@ router.route('/:id').get((req,res)=> {
 });
 
 router.route('/updateWallet/:id').put(function(req,res){
-    Wallet.findOneAndUpdate({userId:req.params.id},req.body)
+    Wallet.findOneAndUpdate({userId:req.params.id},{"amount":req.body.amount},{new:true})
     .then(wallet=>res.json(wallet))
     .catch(err=>res.status(400).json('Error' + err));
 })
