@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-app.set('view engine', 'ejs');
+//app.set('view engine', 'ejs');
 
 app.use(cors());
 
@@ -67,7 +67,7 @@ const userRouter = require('./routes/userRoute');
 app.use('/user', userRouter);
 
 app.get('/', (req, res) => {
-    res.render('index');
+    res.send("home page here");
 })
 
 
