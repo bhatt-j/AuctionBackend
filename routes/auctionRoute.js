@@ -12,7 +12,6 @@ router.route('/all').get((req, res) => {
     })
 })
 
-
 router.route('/:id').get((req,res)=> {
     Auction.findById(req.params.id)
     .then(auction=>res.json(auction))
