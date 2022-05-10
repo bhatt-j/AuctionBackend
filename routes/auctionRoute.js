@@ -76,6 +76,19 @@ router.route('/deleteProduct/:id').delete((req,res)=> {
    .catch(err=>res.status(400).json('Error' + err));
 });
 
+router.route('/start-auction/:id').put((req, res) => {
+    Auction.updateOne({_id : req.params.id}, {status : "live"})
+    res.send("auction is now live")
+})
+
+router.route('/end-auction/:id').put((req, res) => {
+    Auction.updateOne({_id : req.params.id}, {status : "end"})
+    .then((result) => {
+        res.json(result)
+    })
+    //res.send("auction ended")
+})
+
 router.route('/bidProduct/:id').put(function (req,res) {
     const bidderName=req.body.name;
     const amt=req.body.amount;
@@ -89,3 +102,7 @@ router.route('/bidProduct/:id').put(function (req,res) {
 })
 
 module.exports = router;
+
+//ongoing
+//upcoming
+//ended

@@ -94,7 +94,7 @@ router.route('/register').post(async (req, res) => {
           token: resetToken,
           createdAt: Date.now(),
         }).save();
-        const link = `https://localhost:4000/user/verify-account/${resetToken}/${userid}`;
+        const link = `http://localhost:3000/user/verify-account/${resetToken}/${userid}`;
         console.log(link);
 
         const mailOptions = {
@@ -137,24 +137,23 @@ router.route('/register').post(async (req, res) => {
 router.route('/login').post(async (req,res)=> {
   console.log('hello');
   User.findOne({email:req.body.email})
-  .then(user=>{
+  .then(async user=>{
     console.log(user);
     if(!user)
       return res.status(404).json({error:"No user found"})
     else{
-      if(user.isVerified)
-      { 
-        bcrypt.compare(req.body.password,user.password,(error,result)=>{
-          if(error)
-            return res.status(500).json(error)
-          else if(result)
-            return res.status(200).json(user)
-          else
-            return res.status(403).json({error:"Password is incorrect"})
-        })
+      let result = await bcrypt.compare(req.body.password,user.password);
+      if(!result){
+        return res.status(403).json({error:"Password is incorrect"})
       }
       else{
-        return res.json("Please Verify Your Account Before Logging In.")
+        if(user.isVerified)
+        {
+          return res.status(200).json(user);
+        }
+        else{
+          return res.json("Please Verify Your Account Before Logging In.")
+        }
       }
     }
   })
@@ -223,22 +222,22 @@ router.route('/reset-password/:token/:userid').post( async (req, res) => {
 
 
 router.route('/forgot-password').post( async (req, res) => {
+  console.log(req.body)
   const email = req.body.email;
   let userid;
   console.log("email recieved: " + email)
   const user = User.findOne({email})
-  .then((result) => {
+  .then(async (result) => {
+    console.log("result: " + result)
     if(result == null)
     {
-      res.json("user not found");
+      
+      return res.json("user not found");
     }
     else{
       userid = result._id;
       //res.json("user exists")
-    }
-  })
-
-  const token = await Token.findOne({ _id: user._id });
+      const token = await Token.findOne({ _id: user._id });
   if (token) { 
         await token.deleteOne()
   };
@@ -251,10 +250,10 @@ router.route('/forgot-password').post( async (req, res) => {
     createdAt: Date.now(),
   }).save();
 
-  const link = `https://localhost:4000/user/reset-password/${resetToken}/${userid}`;
+  const link = `http://localhost:3000/user/reset-password/${resetToken}/${userid}`;
   console.log(link)
 
-  const currentUrl = "https://localhost:4000/";
+  const currentUrl = "http://localhost:3000/";
 
   const mailOptions = {
     from: process.env.AUTH_EMAIL,
@@ -281,10 +280,10 @@ router.route('/forgot-password').post( async (req, res) => {
         res.json(err);
     });
 
+    }
+  })
 
-
-
-
+  
   
 })
 
