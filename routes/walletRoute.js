@@ -2,11 +2,11 @@ const router = require('express').Router();
 const wallet = require('../models/wallet');
 let Wallet = require('../models/wallet');
 
-router.route('/get_wallet').post((req,res)=> {
-    Wallet.findById(req.params.id)
-    .then(wallet=>res.json(wallet))
-    .catch(err=>res.status(400).json('Error' + err));
-});
+// router.route('/get_wallet').post((req,res)=> {
+//     Wallet.findById(req.params.id)
+//     .then(wallet=>res.json(wallet))
+//     .catch(err=>res.status(400).json('Error' + err));
+// });
 
 router.route('/add_amount').post((req, res) => {
     const wallet = new Wallet(req.body)

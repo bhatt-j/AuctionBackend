@@ -4,6 +4,8 @@ const Token = require('../models/token');
 const crypto = require("crypto");
 const mail = require('nodemailer');
 
+const wallet=require('../models/wallet')
+
 //bcrypt
 const bcrypt=require('bcryptjs')
 
@@ -74,6 +76,8 @@ router.route('/register').post(async (req, res) => {
         const hash_password = await bcrypt.hash(req.body.password, salt);
         req.body.password = hash_password
 
+        req.body.avtar="uploads\\profile_pic.png";
+
         let new_user = await User.create(req.body)
         if (!new_user) {
           return responses.serverErrorResponse(res, "Error while creating user.")
@@ -94,7 +98,7 @@ router.route('/register').post(async (req, res) => {
           token: resetToken,
           createdAt: Date.now(),
         }).save();
-        const link = `https://localhost:3000/user/verify-account/${resetToken}/${userid}`;
+        const link = `http://localhost:3000/user/verify-account/${resetToken}/${userid}`;
         console.log(link);
 
         const mailOptions = {
@@ -113,20 +117,16 @@ router.route('/register').post(async (req, res) => {
           </body>
           `
         }
-
-        transporter.sendMail(mailOptions)
+ transporter.sendMail(mailOptions)
           .then(() => {
               console.log("Mail Sent!")
           })
           .catch((err) => {
               console.log(err);
           });
-
-
-        //
+//
 
         return responses.successfullyCreatedResponse(res, new_user)
-
 
       } catch (error) {
         console.log(error)
@@ -135,24 +135,26 @@ router.route('/register').post(async (req, res) => {
 });
 
 router.route('/login').post(async (req,res)=> {
+  //console.log('hello');
   User.findOne({email:req.body.email})
   .then(async user=>{
+    console.log(user);
     if(!user)
       return res.status(404).json({error:"No user found"})
     else{
-      let result = await bcrypt.compare(req.body.password,user.password)
-      if(!result)
+      let result = await bcrypt.compare(req.body.password,user.password);
+      if(!result){
+        return res.status(403).json({error:"Password is incorrect"})
+      }
+      else{
+        if(user.isVerified)
         {
-          return res.status(403).json({error:"Password is incorrect"})
+          return res.status(200).json(user);
         }
-        else
-        {
-          if(user.isVerified){
-            return res.status(200).json(user)
-          }else{
-            return res.json({error:"Please Verify Your Account Before Logging In."})
-          }
+        else{
+          return res.json("Please Verify Your Account Before Logging In.")
         }
+      }
     }
   })
  .catch(error=>{
@@ -166,7 +168,10 @@ router.route('/:id').get((req,res)=> {
    .catch(err=>res.status(400).json('Error' + err));
 });
 
-router.route('/updateUser/:id').put(function(req,res){
+router.route('/updateUser/:id').put(async function(req,res){
+  const salt = await bcrypt.genSalt(10);
+        const hash_password = await bcrypt.hash(req.body.password, salt);
+        req.body.password = hash_password
     User.findByIdAndUpdate(req.params.id,req.body)
     .then(user=>res.json(user))
     .catch(err=>res.status(400).json('Error' + err));
@@ -188,8 +193,14 @@ router.route('/verify-account/:token/:userid').get( async (req, res) => {
           const update = await User.updateOne({ _id : req.params.userid }, {isVerified : true})
           if(update)
           {
-              res.json("account verified successfully")
-
+              // const wallet1=await (await wallet).create;
+              // wallet1.userId=(req.params.userid);
+              // wallet1.amount=0;
+              const wallet1=new wallet({"userId":req.params.userid,"amount":0 })
+              wallet1.save()
+             .then((result) => {
+                 res.json("Wallet Added")
+              })
           }
           else{
             res.json("error verifying account")
@@ -212,7 +223,6 @@ router.route('/reset-password/:token/:userid').post( async (req, res) => {
             if(update)
             {
                 res.json("password changed successfully")
-
             }
         }
     }
@@ -220,61 +230,66 @@ router.route('/reset-password/:token/:userid').post( async (req, res) => {
 
 
 router.route('/forgot-password').post( async (req, res) => {
+
   console.log(req.body);
   const email = req.body.email;
   let userid;
   console.log("email recieved: " + email)
   const user = User.findOne({email})
   .then(async (result) => {
+    console.log("result: " + result)
     if(result == null)
     {
+      
       return res.json("user not found");
     }
     else{
       userid = result._id;
       //res.json("user exists")
       const token = await Token.findOne({ _id: user._id });
-      if (token) {
-            await token.deleteOne()
-      };
 
-      let resetToken = crypto.randomBytes(32).toString("hex");
+  if (token) { 
+        await token.deleteOne()
+  };
 
-      await new Token({
-        userid: userid,
-        token: resetToken,
-        createdAt: Date.now(),
-      }).save();
+  let resetToken = crypto.randomBytes(32).toString("hex");
 
-      const link = `http://localhost:3000/user/reset-password/${resetToken}/${userid}`;
-      console.log(link)
+  await new Token({
+    userid: userid,
+    token: resetToken,
+    createdAt: Date.now(),
+  }).save();
 
-      const currentUrl = "http://localhost:3000/";
+  const link = `http://localhost:3000/user/reset-password/${resetToken}/${userid}`;
+  console.log(link)
 
-      const mailOptions = {
-        from: process.env.AUTH_EMAIL,
-        to: email,
-        subject: "Auction Project - Change Password Request",
-        html: `
-        <body>
-        <h1>Reset Password Request </h1>
-        <hr>
-        <h3>Important: This link will be valid for only 1 Hour! </h3>
-        <p> Click <a href=${link}>here</a> to change your password. </p>
-        <hr>
-        <p>Regards,</p>
-        <p>Team Auction Project </p>
-        </body>
-        `
-      }
+  const currentUrl = "http://localhost:3000/";
 
-      transporter.sendMail(mailOptions)
-        .then(() => {
-            res.json("Mail Sent!")
-        })
-        .catch((err) => {
-            res.json(err);
-        });
+  const mailOptions = {
+    from: process.env.AUTH_EMAIL,
+    to: email,
+    subject: "Auction Project - Change Password Request",
+    html: `
+    <body>
+    <h1>Reset Password Request </h1>
+    <hr>
+    <h3>Important: This link will be valid for only 1 Hour! </h3>
+    <p> Click <a href=${link}>here</a> to change your password. </p>
+    <hr>
+    <p>Regards,</p>
+    <p>Team Auction Project </p>
+    </body>
+    `
+  }
+
+  transporter.sendMail(mailOptions)
+    .then(() => {
+        res.json("Mail Sent!")
+    })
+    .catch((err) => {
+        res.json(err);
+    });
+
     }
   })
 

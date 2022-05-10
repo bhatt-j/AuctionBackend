@@ -13,7 +13,7 @@ router.route('/all').get((req, res) => {
 })
 
 router.route('/:id').get((req,res)=> {
-    Auction.findById(req.params.id)
+    Auction.find({"userId":req.params.id})
     .then(auction=>res.json(auction))
     .catch(err=>res.status(400).json('Error' + err));
 });
@@ -26,7 +26,7 @@ router.route('/add_auction').post((req, res) => {
     })
 });
 
-router.route('/:id').get((req,res)=> {
+router.route('/getBid/:id').get((req,res)=> {
     Auction.findById(req.params.id)
    .then(auction=>res.json(auction))
    .catch(err=>res.status(400).json('Error' + err));
@@ -76,6 +76,19 @@ router.route('/deleteProduct/:id').delete((req,res)=> {
    .catch(err=>res.status(400).json('Error' + err));
 });
 
+router.route('/start-auction/:id').put((req, res) => {
+    Auction.updateOne({_id : req.params.id}, {status : "live"})
+    res.send("auction is now live")
+})
+
+router.route('/end-auction/:id').put((req, res) => {
+    Auction.updateOne({_id : req.params.id}, {status : "end"})
+    .then((result) => {
+        res.json(result)
+    })
+    //res.send("auction ended")
+})
+
 router.route('/bidProduct/:id').put(function (req,res) {
     const bidderName=req.body.name;
     const bidderId = req.body.bidderId;
@@ -92,3 +105,7 @@ router.route('/bidProduct/:id').put(function (req,res) {
 })
 
 module.exports = router;
+
+//ongoing
+//upcoming
+//ended
