@@ -3,6 +3,7 @@ let User = require('../models/user');
 const Token = require('../models/token');
 const crypto = require("crypto");
 const mail = require('nodemailer');
+
 const wallet=require('../models/wallet')
 
 //bcrypt
@@ -50,14 +51,14 @@ router.route('/all').get((req, res) => {
 router.route('/register').post(async (req, res) => {
     try {
         let validate = await validation(req.body);
-    
+
         if (validate.error) {
           return responses.badRequestResponse(
             res,
             validate.error.details[0].message
           );
         }
-    
+
         let user =await User.findOne({
           $or: [
             {
@@ -74,7 +75,9 @@ router.route('/register').post(async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hash_password = await bcrypt.hash(req.body.password, salt);
         req.body.password = hash_password
+
         req.body.avtar="uploads\\profile_pic.png";
+
         let new_user = await User.create(req.body)
         if (!new_user) {
           return responses.serverErrorResponse(res, "Error while creating user.")
@@ -84,7 +87,7 @@ router.route('/register').post(async (req, res) => {
         const userid = new_user._id;
         console.log(userid);
         const token = await Token.findOne({ userid: new_user._id });
-        if (token) { 
+        if (token) {
               await token.deleteOne()
         };
 
@@ -114,20 +117,16 @@ router.route('/register').post(async (req, res) => {
           </body>
           `
         }
-      
-        transporter.sendMail(mailOptions)
+ transporter.sendMail(mailOptions)
           .then(() => {
               console.log("Mail Sent!")
           })
           .catch((err) => {
               console.log(err);
           });
-      
-
-        //
+//
 
         return responses.successfullyCreatedResponse(res, new_user)
-        
 
       } catch (error) {
         console.log(error)
@@ -224,7 +223,6 @@ router.route('/reset-password/:token/:userid').post( async (req, res) => {
             if(update)
             {
                 res.json("password changed successfully")
-                
             }
         }
     }
@@ -232,7 +230,8 @@ router.route('/reset-password/:token/:userid').post( async (req, res) => {
 
 
 router.route('/forgot-password').post( async (req, res) => {
-  console.log(req.body)
+
+  console.log(req.body);
   const email = req.body.email;
   let userid;
   console.log("email recieved: " + email)
@@ -248,6 +247,7 @@ router.route('/forgot-password').post( async (req, res) => {
       userid = result._id;
       //res.json("user exists")
       const token = await Token.findOne({ _id: user._id });
+
   if (token) { 
         await token.deleteOne()
   };
@@ -293,8 +293,6 @@ router.route('/forgot-password').post( async (req, res) => {
     }
   })
 
-  
-  
 })
 
 module.exports = router;
