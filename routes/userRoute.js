@@ -74,7 +74,7 @@ router.route('/register').post(async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hash_password = await bcrypt.hash(req.body.password, salt);
         req.body.password = hash_password
-    
+        req.body.avtar="uploads\\profile_pic.png";
         let new_user = await User.create(req.body)
         if (!new_user) {
           return responses.serverErrorResponse(res, "Error while creating user.")
@@ -169,7 +169,10 @@ router.route('/:id').get((req,res)=> {
    .catch(err=>res.status(400).json('Error' + err));
 });
 
-router.route('/updateUser/:id').put(function(req,res){
+router.route('/updateUser/:id').put(async function(req,res){
+  const salt = await bcrypt.genSalt(10);
+        const hash_password = await bcrypt.hash(req.body.password, salt);
+        req.body.password = hash_password
     User.findByIdAndUpdate(req.params.id,req.body)
     .then(user=>res.json(user))
     .catch(err=>res.status(400).json('Error' + err));

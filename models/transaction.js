@@ -16,7 +16,7 @@ const transactionSchema = new Schema({
         type: Date,
         required: true
     },
-    bidId: {
+    auctionId: {
         type: mongoose.Schema.Types.ObjectId,
         ref:"auctions",
         required: true
