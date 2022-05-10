@@ -1,6 +1,6 @@
 const { string } = require('joi');
 const mongoose = require('mongoose')
-const Schema = mongoose.Schema 
+const Schema = mongoose.Schema
 
 const auctionSchema = new Schema({
     userId: {
@@ -45,10 +45,7 @@ const auctionSchema = new Schema({
         required:true
     },
     Bid: {
-        bidInfo: [{
-            Bidder:String,
-            Amount:Number,
-        }],
+        bidInfo: Array,
     },
     highestBid:{
         type:Number

@@ -12,7 +12,6 @@ router.route('/all').get((req, res) => {
     })
 })
 
-
 router.route('/:id').get((req,res)=> {
     Auction.findById(req.params.id)
     .then(auction=>res.json(auction))
@@ -79,12 +78,15 @@ router.route('/deleteProduct/:id').delete((req,res)=> {
 
 router.route('/bidProduct/:id').put(function (req,res) {
     const bidderName=req.body.name;
+    const bidderId = req.body.bidderId;
     const amt=req.body.amount;
     const bidInfo = {
         Bidder: bidderName,
+        bidderId:bidderId,
         Amount: amt
     };
-    Auction.findByIdAndUpdate(req.params.id,{"highestBid":amt,"Bid":{$push:{bidInfo}}})
+    console.log(bidInfo)
+    Auction.findByIdAndUpdate(req.params.id,{"highestBid":amt,$push:{"Bid.bidInfo":bidInfo}},{new:true})
     .then(auction=>res.json(auction))
    .catch(err=>res.status(400).json('Error' + err));
 })
