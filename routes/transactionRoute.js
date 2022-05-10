@@ -2,10 +2,10 @@ const router = require('express').Router();
 const transaction = require('../models/transaction');
 let Transaction = require('../models/transaction');
 
-router.route('/get_transaction').post((req,res)=> {
-    Transaction.find({'_id': req.body.id}, (err, docs) => {
-        res.json(docs);
-    })
+router.route('/get_transaction/:id').get((req,res)=> {
+    Transaction.find({"userId":req.params.id})
+    .then(transaction=>res.json(transaction))
+    .catch(err=>res.status(400).json('Error' + err));
 });
 
 router.route('/add_transaction').post((req, res) => {

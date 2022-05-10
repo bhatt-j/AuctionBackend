@@ -13,7 +13,7 @@ router.route('/all').get((req, res) => {
 })
 
 router.route('/:id').get((req,res)=> {
-    Auction.findById(req.params.id)
+    Auction.find({"userId":req.params.id})
     .then(auction=>res.json(auction))
     .catch(err=>res.status(400).json('Error' + err));
 });
@@ -26,7 +26,7 @@ router.route('/add_auction').post((req, res) => {
     })
 });
 
-router.route('/:id').get((req,res)=> {
+router.route('/getBid/:id').get((req,res)=> {
     Auction.findById(req.params.id)
    .then(auction=>res.json(auction))
    .catch(err=>res.status(400).json('Error' + err));
