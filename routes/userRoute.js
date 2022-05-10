@@ -2,6 +2,11 @@ const router = require('express').Router();
 let User = require('../models/user');
 const {upload} = require('../filehelper/filehelper');
 
+// email verification
+const mail = require('nodemailer')
+const {v4 : uuidv4} = require('uuid')
+
+
 //bcrypt
 const bcrypt = require('bcryptjs')
 
@@ -11,6 +16,47 @@ const responses = require("../utils/responses")
 //validations
 const validation = require('../validations/register.validation');
 const { json } = require('express');
+
+let transporter = mail.createTransport({
+  service: "gmail",
+  auth: {
+      user: process.env.AUTH_EMAIL,
+      pass: process.env.AUTH_PASS
+  }
+})
+
+transporter.verify((err, success) => {
+  if(err)
+  {
+      console.log(err);
+  }
+  else{
+      console.log('ready to send emails!');
+      console.log(success);
+  }
+})
+
+const sendVerificationMail = ({_id, email, uniqueToken}, res) => {
+  
+  const currentUrl = "http://localhost:4000/";
+  
+
+  const mailOptions = {
+      from: process.env.AUTH_EMAIL,
+      to: email,
+      subject: "Verify your Email",
+      html: `<p> Click <a href=${currentUrl + "user/verify" + "/" + uniqueToken}>here</a> to verify your mail </p>`
+  }
+
+  transporter.sendMail(mailOptions)
+  .then(() => {
+      res.json("Mail Sent!")
+  })
+  .catch((err) => {
+      res.json(err);
+  });
+}
+
 
 router.route('/all').get((req, res) => {
   User.find()

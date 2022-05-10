@@ -20,8 +20,12 @@ module.exports = (user) => {
     //     return helper.message("Enter Valid Email ID");
     //   }),
       email:joi.string().email().required(),
+<<<<<<< HEAD
       mobileNumber:joi.string().required(),
       dob:joi.string().required(),
+=======
+      mobileNumber:joi.string().required()
+>>>>>>> 5f22324f729c63ada5f6c63010d4e79717d273d7
     })
     .options({ abortEarly: true });
   return createUserSchema.validate(user);
