@@ -3,6 +3,7 @@ let User = require('../models/user');
 const Token = require('../models/token');
 const crypto = require("crypto");
 const mail = require('nodemailer');
+const wallet=require('../models/wallet')
 
 //bcrypt
 const bcrypt=require('bcryptjs')
@@ -135,7 +136,7 @@ router.route('/register').post(async (req, res) => {
 });
 
 router.route('/login').post(async (req,res)=> {
-  console.log('hello');
+  //console.log('hello');
   User.findOne({email:req.body.email})
   .then(user=>{
     console.log(user);
@@ -191,8 +192,14 @@ router.route('/verify-account/:token/:userid').get( async (req, res) => {
           const update = await User.updateOne({ _id : req.params.userid }, {isVerified : true})
           if(update)
           {
-              res.json("account verified successfully")
-              
+              // const wallet1=await (await wallet).create;
+              // wallet1.userId=(req.params.userid);
+              // wallet1.amount=0;
+              const wallet1=new wallet({"userId":req.params.userid,"amount":0 })
+              wallet1.save()
+             .then((result) => {
+                 res.json("Wallet Added")
+              })
           }
           else{
             res.json("error verifying account")
