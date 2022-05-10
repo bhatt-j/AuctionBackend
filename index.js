@@ -32,6 +32,9 @@ app.use('/uploads',express.static(path.join(__dirname)));
 const fileRouter = require('./routes/fileUpload');
 app.use('/fileApi',fileRouter);
 
+const feedbackRouter = require('./routes/feedbackRoute');
+app.use('/feedback',feedbackRouter);
+
 const adminRouter = require('./routes/adminRoute');
 app.use('/admin',adminRouter);
 
