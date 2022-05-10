@@ -22,6 +22,21 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     console.log(err)
 })
 
+app.use(function (req, res, next) {
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    );
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With,content-type, Accept"
+    );
+    res.setHeader("Access-Control-Allow-Credentials", true);
+    next();
+  });
+  
+
 app.use(express.json());
 app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
@@ -31,6 +46,9 @@ app.use('/uploads',express.static(path.join(__dirname)));
 
 const fileRouter = require('./routes/fileUpload');
 app.use('/fileApi',fileRouter);
+
+const feedbackRouter = require('./routes/feedbackRoute');
+app.use('/feedback',feedbackRouter);
 
 const adminRouter = require('./routes/adminRoute');
 app.use('/admin',adminRouter);
