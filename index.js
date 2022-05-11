@@ -25,7 +25,7 @@ const dbURI = process.env.DB_URL
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then((result) => {
     console.log('connected to DB')
-    app.listen(4000, () => console.log("server running at port 4000"));
+    app.listen(port, () => console.log("server running at port 4000"));
 })
 .catch((err) => {
     console.log(err)
