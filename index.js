@@ -3,8 +3,17 @@ const cors = require('cors');
 const path = require('path');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-require("dotenv/config")
 const app = express();
+require("dotenv/config")
+var port = process.env.PORT || 4000;
+
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Accept, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 //app.set('view engine', 'ejs');
 
@@ -13,7 +22,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 const dbURI = process.env.DB_URL
-mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true }, () => {})
+mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then((result) => {
     console.log('connected to DB')
     app.listen(4000, () => console.log("server running at port 4000"));
@@ -70,6 +79,7 @@ app.get('/', (req, res) => {
     res.send("home page here");
 })
 
+app.set('port', port);
 
 
 
