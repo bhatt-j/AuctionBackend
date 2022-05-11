@@ -169,9 +169,12 @@ router.route('/:id').get((req,res)=> {
 });
 
 router.route('/updateUser/:id').put(async function(req,res){
-  const salt = await bcrypt.genSalt(10);
-        const hash_password = await bcrypt.hash(req.body.password, salt);
-        req.body.password = hash_password
+    if(req.body.password){
+      const salt = await bcrypt.genSalt(10);
+      const hash_password = await bcrypt.hash(req.body.password, salt);
+      req.body.password = hash_password;
+    }
+    console.log(req.body.password);
     User.findByIdAndUpdate(req.params.id,req.body)
     .then(user=>res.json(user))
     .catch(err=>res.status(400).json('Error' + err));
@@ -210,9 +213,13 @@ router.route('/verify-account/:token/:userid').get( async (req, res) => {
 })
 
 router.route('/reset-password/:token/:userid').post( async (req, res) => {
-  const newpass = req.body.newpassword;
+  let newpass = req.body.newpassword;
   console.log("token: " + req.params.token + " " + "userid: " + req.params.userid)
   console.log("new password recieved" + newpass);
+  const salt = await bcrypt.genSalt(10);
+      const hash_password = await bcrypt.hash(newpass, salt);
+      newpass = hash_password;
+      console.log(newpass);
   const token = await Token.findOne({ token : req.params.token })
     if(token)
     {
