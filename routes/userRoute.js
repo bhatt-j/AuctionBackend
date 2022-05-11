@@ -152,7 +152,7 @@ router.route('/login').post(async (req,res)=> {
           return res.status(200).json(user);
         }
         else{
-          return res.json("Please Verify Your Account Before Logging In.")
+          return res.json({error:"Please Verify Your Account Before Logging In."})
         }
       }
     }
@@ -240,7 +240,7 @@ router.route('/forgot-password').post( async (req, res) => {
     console.log("result: " + result)
     if(result == null)
     {
-      
+
       return res.json("user not found");
     }
     else{
@@ -248,7 +248,7 @@ router.route('/forgot-password').post( async (req, res) => {
       //res.json("user exists")
       const token = await Token.findOne({ _id: user._id });
 
-  if (token) { 
+  if (token) {
         await token.deleteOne()
   };
 

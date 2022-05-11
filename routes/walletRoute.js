@@ -18,7 +18,7 @@ router.route('/add_amount').post((req, res) => {
 
 router.route('/:id').get((req,res)=> {
     Wallet.findOne({userId:req.params.id})
-   .then(wallet=>res.json(wallet))
+   .then(wallet=>{res.json(wallet)})
    .catch(err=>res.status(400).json('Error' + err));
 });
 
