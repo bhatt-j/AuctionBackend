@@ -50,7 +50,6 @@ router.route('/add-product').post(upload.array('file'),(req, res) => {
     for(var i=0;i<req.files.length;i++){
         productImage.push(req.files[i].path);
     }
-    console.log(productImage);
     const auction  = new Auction({"productImage":productImage,"userId":req.body.userId,"productName":req.body.productName,"productDescription":req.body.productDescription,"productPrice":req.body.productPrice,"startDate":req.body.startDate,"endDate":req.body.endDate,"status":"upcoming","highestBid":req.body.productPrice})
     auction.save()
     .then((result) => {
@@ -98,7 +97,6 @@ router.route('/bidProduct/:id').put(function (req,res) {
         bidderId:bidderId,
         Amount: amt
     };
-    console.log(bidInfo)
     Auction.findByIdAndUpdate(req.params.id,{"highestBid":amt,$push:{"Bid.bidInfo":bidInfo}},{new:true})
     .then(auction=>res.json(auction))
    .catch(err=>res.status(400).json('Error' + err));

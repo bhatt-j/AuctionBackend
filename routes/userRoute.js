@@ -3,7 +3,7 @@ let User = require('../models/user');
 const Token = require('../models/token');
 const crypto = require("crypto");
 const mail = require('nodemailer');
-
+require("dotenv/config")
 const wallet=require('../models/wallet')
 
 //bcrypt
@@ -21,8 +21,8 @@ const { json } = require('express');
 let transporter = mail.createTransport({
   service: "gmail",
   auth: {
-      user: "projectauction12@gmail.com",
-      pass: "auction12"
+      user: process.env.EMAIL_ID,
+      pass: process.env.EMAIL_PASS
   }
 })
 
@@ -30,10 +30,6 @@ transporter.verify((err, success) => {
   if(err)
   {
       console.log(err);
-  }
-  else{
-      console.log('ready to send emails!');
-      console.log(success);
   }
 })
 
@@ -68,7 +64,6 @@ router.route('/register').post(async (req, res) => {
             }
           ]
         })
-        console.log(user)
         if (user) {
           return responses.badRequestResponse(res, { err: "user Already exists." })
         }
@@ -85,7 +80,6 @@ router.route('/register').post(async (req, res) => {
 
         //
         const userid = new_user._id;
-        console.log(userid);
         const token = await Token.findOne({ userid: new_user._id });
         if (token) {
               await token.deleteOne()
@@ -99,10 +93,9 @@ router.route('/register').post(async (req, res) => {
           createdAt: Date.now(),
         }).save();
         const link = `http://localhost:3000/user/verify-account/${resetToken}/${userid}`;
-        console.log(link);
 
         const mailOptions = {
-          from: process.env.AUTH_EMAIL,
+          from: process.env.EMAIL_ID,
           to: new_user.email,
           subject: "Auction Project - Verify Email To Continue",
           html: `
@@ -118,9 +111,6 @@ router.route('/register').post(async (req, res) => {
           `
         }
  transporter.sendMail(mailOptions)
-          .then(() => {
-              console.log("Mail Sent!")
-          })
           .catch((err) => {
               console.log(err);
           });
@@ -129,7 +119,6 @@ router.route('/register').post(async (req, res) => {
         return responses.successfullyCreatedResponse(res, new_user)
 
       } catch (error) {
-        console.log(error)
         return responses.serverErrorResponse(res)
       }
 });
@@ -138,7 +127,6 @@ router.route('/login').post(async (req,res)=> {
   //console.log('hello');
   User.findOne({email:req.body.email})
   .then(async user=>{
-    console.log(user);
     if(!user)
       return res.status(404).json({error:"No user found"})
     else{
@@ -174,7 +162,6 @@ router.route('/updateUser/:id').put(async function(req,res){
       const hash_password = await bcrypt.hash(req.body.password, salt);
       req.body.password = hash_password;
     }
-    console.log(req.body.password);
     User.findByIdAndUpdate(req.params.id,req.body)
     .then(user=>res.json(user))
     .catch(err=>res.status(400).json('Error' + err));
@@ -214,12 +201,9 @@ router.route('/verify-account/:token/:userid').get( async (req, res) => {
 
 router.route('/reset-password/:token/:userid').post( async (req, res) => {
   let newpass = req.body.newpassword;
-  console.log("token: " + req.params.token + " " + "userid: " + req.params.userid)
-  console.log("new password recieved" + newpass);
   const salt = await bcrypt.genSalt(10);
       const hash_password = await bcrypt.hash(newpass, salt);
       newpass = hash_password;
-      console.log(newpass);
   const token = await Token.findOne({ token : req.params.token })
     if(token)
     {
@@ -238,13 +222,10 @@ router.route('/reset-password/:token/:userid').post( async (req, res) => {
 
 router.route('/forgot-password').post( async (req, res) => {
 
-  console.log(req.body);
   const email = req.body.email;
   let userid;
-  console.log("email recieved: " + email)
   const user = User.findOne({email})
   .then(async (result) => {
-    console.log("result: " + result)
     if(result == null)
     {
 
@@ -268,12 +249,11 @@ router.route('/forgot-password').post( async (req, res) => {
   }).save();
 
   const link = `http://localhost:3000/user/reset-password/${resetToken}/${userid}`;
-  console.log(link)
 
   const currentUrl = "http://localhost:3000/";
 
   const mailOptions = {
-    from: process.env.AUTH_EMAIL,
+    from: process.env.EMAIL_ID,
     to: email,
     subject: "Auction Project - Change Password Request",
     html: `
