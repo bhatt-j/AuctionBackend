@@ -1,6 +1,26 @@
 const router = require('express').Router();
 let Admin = require('../models/admin');
 
+router.route('/admin_login').post(async (req,res)=> {
+    //console.log('hello');
+    Admin.findOne({email:req.body.email})
+    .then(async user=>{
+      console.log(user);
+      if(!user)
+        return res.status(404).json({error:"No user found"})
+      else{
+        if(user.password==req.body.password)
+            return res.status(200).json(user);
+        else{
+          return res.status(403).json({error:"Password is incorrect"})
+        }
+      }
+    })
+   .catch(error=>{
+     res.status(500).json(error)
+   })
+  });
+
 router.route('/get_admin').post((req,res)=> {
     Admin.find({'username': req.body.username}, (err, docs) => {
         res.json(docs);
