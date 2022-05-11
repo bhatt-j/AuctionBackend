@@ -11,7 +11,6 @@ router.route('/uploadFile/:id').put(upload.single('avtar'),async (req,res)=>{
         }
         User.findByIdAndUpdate(req.params.id,{"avtar":req.file.path})
         .then(user=>res.json(user))
-        console.log(file);
        // res.status(201).send('File uploaded');
     }
     catch(error){

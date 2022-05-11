@@ -5,7 +5,6 @@ router.route('/admin_login').post(async (req,res)=> {
     //console.log('hello');
     Admin.findOne({email:req.body.email})
     .then(async user=>{
-      console.log(user);
       if(!user)
         return res.status(404).json({error:"No user found"})
       else{
