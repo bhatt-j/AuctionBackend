@@ -2,11 +2,11 @@ const router = require('express').Router();
 const wallet = require('../models/wallet');
 let Wallet = require('../models/wallet');
 
-router.route('/get_wallet').post((req,res)=> {
-    Wallet.findById(req.params.id)
-    .then(wallet=>res.json(wallet))
-    .catch(err=>res.status(400).json('Error' + err));
-});
+// router.route('/get_wallet').post((req,res)=> {
+//     Wallet.findById(req.params.id)
+//     .then(wallet=>res.json(wallet))
+//     .catch(err=>res.status(400).json('Error' + err));
+// });
 
 router.route('/add_amount').post((req, res) => {
     const wallet = new Wallet(req.body)
@@ -17,13 +17,13 @@ router.route('/add_amount').post((req, res) => {
 });
 
 router.route('/:id').get((req,res)=> {
-    Wallet.findById(req.params.id)
-   .then(wallet=>res.json(wallet))
+    Wallet.findOne({userId:req.params.id})
+   .then(wallet=>{res.json(wallet)})
    .catch(err=>res.status(400).json('Error' + err));
 });
 
 router.route('/updateWallet/:id').put(function(req,res){
-    Wallet.findByIdAndUpdate(req.params.id,req.body)
+    Wallet.findOneAndUpdate({userId:req.params.id},{"amount": req.body.amount},{new: true})
     .then(wallet=>res.json(wallet))
     .catch(err=>res.status(400).json('Error' + err));
 })

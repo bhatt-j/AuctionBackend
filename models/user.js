@@ -40,6 +40,10 @@ const userSchema = new Schema({
     },
     avtar:{
         type:String
+    },
+    isVerified: {
+        type: Boolean,
+        default: false
     }
 }, {timestamps: true});
 

@@ -12,9 +12,8 @@ router.route('/all').get((req, res) => {
     })
 })
 
-
 router.route('/:id').get((req,res)=> {
-    Auction.findById(req.params.id)
+    Auction.find({"userId":req.params.id})
     .then(auction=>res.json(auction))
     .catch(err=>res.status(400).json('Error' + err));
 });
@@ -27,7 +26,7 @@ router.route('/add_auction').post((req, res) => {
     })
 });
 
-router.route('/:id').get((req,res)=> {
+router.route('/getBid/:id').get((req,res)=> {
     Auction.findById(req.params.id)
    .then(auction=>res.json(auction))
    .catch(err=>res.status(400).json('Error' + err));
@@ -51,7 +50,6 @@ router.route('/add-product').post(upload.array('file'),(req, res) => {
     for(var i=0;i<req.files.length;i++){
         productImage.push(req.files[i].path);
     }
-    console.log(productImage);
     const auction  = new Auction({"productImage":productImage,"userId":req.body.userId,"productName":req.body.productName,"productDescription":req.body.productDescription,"productPrice":req.body.productPrice,"startDate":req.body.startDate,"endDate":req.body.endDate,"status":"upcoming","highestBid":req.body.productPrice})
     auction.save()
     .then((result) => {
@@ -77,16 +75,35 @@ router.route('/deleteProduct/:id').delete((req,res)=> {
    .catch(err=>res.status(400).json('Error' + err));
 });
 
+router.route('/start-auction/:id').put((req, res) => {
+    Auction.updateOne({_id : req.params.id}, {status : "live"})
+    res.send("auction is now live")
+})
+
+router.route('/end-auction/:id').put((req, res) => {
+    Auction.updateOne({_id : req.params.id}, {status : "end"})
+    .then((result) => {
+        res.json(result)
+    })
+    //res.send("auction ended")
+})
+
 router.route('/bidProduct/:id').put(function (req,res) {
     const bidderName=req.body.name;
+    const bidderId = req.body.bidderId;
     const amt=req.body.amount;
     const bidInfo = {
         Bidder: bidderName,
+        bidderId:bidderId,
         Amount: amt
     };
-    Auction.findByIdAndUpdate(req.params.id,{"highestBid":amt,"Bid":{$push:{bidInfo}}})
+    Auction.findByIdAndUpdate(req.params.id,{"highestBid":amt,$push:{"Bid.bidInfo":bidInfo}},{new:true})
     .then(auction=>res.json(auction))
    .catch(err=>res.status(400).json('Error' + err));
 })
 
 module.exports = router;
+
+//ongoing
+//upcoming
+//ended
