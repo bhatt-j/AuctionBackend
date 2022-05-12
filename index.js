@@ -7,15 +7,15 @@ const app = express();
 require("dotenv/config")
 var port = process.env.PORT || 4000;
 
-// app.use(function (req, res, next) {
-//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Accept, Authorization');
-//   res.setHeader('Access-Control-Allow-Credentials', true);
-//   next();
-// });
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Accept, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
-//app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 
 app.use(cors());
 
@@ -31,19 +31,19 @@ mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
     console.log(err)
 })
 
-app.use(function (req, res, next) {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-    );
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "X-Requested-With,content-type, Accept"
-    );
-    res.setHeader("Access-Control-Allow-Credentials", true);
-    next();
-  });
+// app.use(function (req, res, next) {
+//     res.setHeader("Access-Control-Allow-Origin", "*");
+//     res.setHeader(
+//       "Access-Control-Allow-Methods",
+//       "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+//     );
+//     res.setHeader(
+//       "Access-Control-Allow-Headers",
+//       "X-Requested-With,content-type, Accept"
+//     );
+//     res.setHeader("Access-Control-Allow-Credentials", true);
+//     next();
+//   });
 
 
 app.use(express.json());
