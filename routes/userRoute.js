@@ -93,7 +93,7 @@ router.route('/register').post(async (req, res) => {
           token: resetToken,
           createdAt: Date.now(),
         }).save();
-        const link = `http://localhost:3000/user/verify-account/${resetToken}/${userid}`;
+        const link = `https://auctionpointfrontend.herokuapp.com/user/verify-account/${resetToken}/${userid}`;
 
         const mailOptions = {
           from: process.env.EMAIL_ID,
@@ -111,11 +111,12 @@ router.route('/register').post(async (req, res) => {
           </body>
           `
         }
- transporter.sendMail(mailOptions)
+        transporter.sendMail(mailOptions).then(res=>{
+          console.log("mail sent"+res)
+        })
           .catch((err) => {
               console.log(err);
           });
-//
 
         return responses.successfullyCreatedResponse(res, new_user)
 
@@ -249,7 +250,7 @@ router.route('/forgot-password').post( async (req, res) => {
     createdAt: Date.now(),
   }).save();
 
-  const link = `http://localhost:3000/user/reset-password/${resetToken}/${userid}`;
+  const link = `https://auctionpointfrontend.herokuapp.com/user/reset-password/${resetToken}/${userid}`;
 
   const currentUrl = "http://localhost:3000/";
 
