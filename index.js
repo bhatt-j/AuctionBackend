@@ -25,11 +25,15 @@ const dbURI = process.env.DB_URL
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then((result) => {
     console.log('connected to DB')
-    app.listen(port, () => console.log("server running at port 4000"));
 })
 .catch((err) => {
     console.log(err)
 })
+app.set('port', port);
+
+app.listen(port, () => {
+   console.log("server running at port 4000")
+});
 
 // app.use(function (req, res, next) {
 //     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -79,7 +83,7 @@ app.get('/', (req, res) => {
     res.send("home page here");
 })
 
-app.set('port', port);
+
 
 
 
