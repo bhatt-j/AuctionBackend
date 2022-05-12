@@ -178,7 +178,7 @@ router.route('/verify-account/:token/:userid').get( async (req, res) => {
   const token = await Token.findOne({ token : req.params.token })
   if(token)
   {
-      const user = await User.findOne({ userId : req.params.userid })
+      const user = await User.findOne({ _id : req.params.userid })
       if(user)
       {
           const update = await User.updateOne({ _id : req.params.userid }, {isVerified : true})
@@ -205,10 +205,10 @@ router.route('/reset-password/:token/:userid').post( async (req, res) => {
   const salt = await bcrypt.genSalt(10);
       const hash_password = await bcrypt.hash(newpass, salt);
       newpass = hash_password;
-  const token = await Token.findOne({ token : req.params.token })
+    const token = await Token.findOne({ token : req.params.token })
     if(token)
     {
-        const user = await User.findOne({ userId : req.params.userid })
+        const user = await User.findOne({ _id : req.params.userid })
         if(user)
         {
             const update = await User.updateOne({ _id : req.params.userid }, {password : newpass})
