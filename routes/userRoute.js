@@ -20,6 +20,7 @@ const { json } = require('express');
 //nodemailer initialize
 let transporter = mail.createTransport({
   service: "gmail",
+  port:587,
   auth: {
       user: process.env.EMAIL_ID,
       pass: process.env.EMAIL_PASS
