@@ -177,7 +177,6 @@ router.route('/verify-account/:token/:userid').get( async (req, res) => {
   const token = await Token.findOne({ token : req.params.token })
   if(token)
   {
-      const user = await User.findOne({ userId : req.params.userid })
       const user = await User.findOne({ _id : req.params.userid })
       if(user)
       {
