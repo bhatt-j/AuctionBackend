@@ -35,7 +35,35 @@ transporter.verify((err, success) => {
 })
 
 
+router.route('/testemail').get((req,res)=>{
+    try{
+        const mailOptions = {
+            from: process.env.EMAIL_ID,
+            to: new_user.email,
+            subject: "Auction Project - Verify Email To Continue",
+            html: `
+            <body>
+            <h1>Verify Your Email </h1>
+            <hr>
+            <h3>Important: This link will be valid for only 1 Hour! </h3>
+            <p> Click <a href=${req.body.msg}>here</a> to verify your account. </p>
+            <hr>
+            <p>Regards,</p>
+            <p>Team Auction Project </p>
+            </body>`
+        }
+        transporter.sendMail(mailOptions).then(res=>{
+            console.log("mail sent"+res)
+        }).catch((err) => {
+            console.log(err);
+        });
 
+      return responses.successfullyCreatedResponse(res, {msg:"Success"})
+
+    } catch (error) {
+      return responses.serverErrorResponse(res)
+    }
+})
 
 router.route('/all').get((req, res) => {
     User.find()
